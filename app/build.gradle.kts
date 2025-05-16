@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.dacs"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -39,6 +39,17 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes +="META-INF/LICENSE"
+            excludes +="META-INF/LICENSE.txt"
+            excludes +="META-INF/NOTICE"
+            excludes +="META-INF/NOTICE.txt"
+            excludes +="mozilla/public-suffix-list.txt"
+        }
     }
 }
 
@@ -67,6 +78,7 @@ dependencies {
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.dagger.hilt.compose)
     implementation(libs.coil)
+    implementation(libs.material)
 
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
@@ -74,7 +86,15 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
     implementation ("com.google.firebase:firebase-messaging")
+    implementation ("com.google.auth:google-auth-library-oauth2-http:1.19.0")
     
     // Cloudinary
     implementation("com.cloudinary:cloudinary-android:2.3.1")
+
+    // AppCompat
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // Zegocloud
+    implementation("com.github.ZEGOCLOUD:zego_uikit_prebuilt_call_android:+")
+    implementation("com.guolindev.permissionx:permissionx:1.8.0")
 }
