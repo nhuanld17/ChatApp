@@ -1,4 +1,4 @@
-package com.example.dacs
+package com.example.dacs.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -6,9 +6,9 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.dacs.R
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.util.Random

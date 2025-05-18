@@ -1,4 +1,4 @@
-package com.example.dacs.feature.home
+package com.example.dacs.viewmodel.home
 
 import androidx.lifecycle.ViewModel
 import com.example.dacs.model.Channel

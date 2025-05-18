@@ -1,4 +1,4 @@
-package com.example.dacs.feature.home
+package com.example.dacs.screen.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -44,10 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.dacs.AppID
-import com.example.dacs.AppSign
+import com.example.dacs.service.AppID
+import com.example.dacs.service.AppSign
 import com.example.dacs.MainActivity
-import com.example.dacs.feature.chat.CallButton
+import com.example.dacs.viewmodel.home.HomeViewModel
+import com.example.dacs.screen.chat.CallButton
 import com.example.dacs.ui.theme.DarkGrey
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -126,7 +127,8 @@ fun HomeScreen(navController: NavController) {
                             unfocusedTextColor = Color.Gray,
                             focusedPlaceholderColor = Color.Gray,
                             unfocusedPlaceholderColor = Color.Gray,
-                            focusedIndicatorColor = Color.Gray
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
                         ),
                         trailingIcon = {
                             Icon(

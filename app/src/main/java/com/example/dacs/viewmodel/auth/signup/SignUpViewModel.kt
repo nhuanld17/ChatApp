@@ -1,4 +1,4 @@
-package com.example.dacs.feature.auth.signup
+package com.example.dacs.viewmodel.auth.signup
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth

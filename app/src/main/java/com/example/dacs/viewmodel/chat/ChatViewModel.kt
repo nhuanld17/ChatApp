@@ -1,4 +1,4 @@
-package com.example.dacs.feature.chat
+package com.example.dacs.viewmodel.chat
 
 import android.content.Context
 import android.net.Uri
@@ -12,8 +12,6 @@ import com.example.dacs.config.CloudinaryConfig
 import com.example.dacs.model.Message
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.Firebase
-import com.google.firebase.auth.GoogleAuthCredential
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

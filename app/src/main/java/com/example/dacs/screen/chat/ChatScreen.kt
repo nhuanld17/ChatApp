@@ -1,8 +1,10 @@
-package com.example.dacs.feature.chat
+package com.example.dacs.screen.chat
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -44,13 +46,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.dacs.R
-import com.example.dacs.feature.home.ChannelItem
+import com.example.dacs.viewmodel.chat.ChatViewModel
+import com.example.dacs.screen.home.ChannelItem
 import com.example.dacs.model.Message
 import com.example.dacs.ui.theme.DarkGrey
 import com.example.dacs.ui.theme.Purple
@@ -129,13 +131,36 @@ fun ChatScreen(navController: NavController, channelId: String, channelName: Str
                     .background(Color.Black.copy(alpha = 0.8f))
                     .padding(16.dp)
             ) {
+//                ChannelItem(
+//                    channelName = channelName,
+//                    onclick = {},
+//                    modifier = Modifier.fillMaxWidth(),
+//                    true,
+//                    onCall = {}
+//                )
+
                 ChannelItem(
                     channelName = channelName,
-                    onclick = {},
-                    modifier = Modifier.fillMaxWidth(),
-                    true,
-                    onCall = {}
-                )
+                    modifier =  Modifier,
+                    shouldShowCallButton = true,
+                    onclick = { },
+                    onCall = { callButton->
+                        viewModel.getAllUserEmail(channelId) {
+                            val list: MutableList<ZegoUIKitUser> = mutableListOf()
+                            it.forEach { email ->
+                                Firebase.auth.currentUser?.email?.let { em ->
+                                    if(email != em){
+                                        list.add(
+                                            ZegoUIKitUser(
+                                                email, email
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                            callButton.setInvitees(list)
+                        }
+                    })
             }
 
             LaunchedEffect(key1 = true) {
@@ -160,7 +185,7 @@ fun ChatScreen(navController: NavController, channelId: String, channelName: Str
     if (chooserDialog.value) {
         ContentSelectionDialog(onCameraSelected = {
             chooserDialog.value = false
-            if (navController.context.checkSelfPermission(Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            if (navController.context.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 cameraImageLauncher.launch(createImageUri())
             } else {
                 // request permisson
@@ -208,7 +233,6 @@ fun ChatMessages(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .imePadding()
     ) {
         LazyColumn(
             modifier = Modifier
@@ -217,28 +241,30 @@ fun ChatMessages(
                 .padding(horizontal = 8.dp),
             reverseLayout = true
         ) {
-            item {
-                ChannelItem(
-                    channelName = channelName,
-                    onclick = {},
-                    modifier = Modifier,
-                    shouldShowCallButton = true,
-                    onCall = { callButton ->
-                        viewModel.getAllUserEmail(channelId, {
-                            val list:MutableList<ZegoUIKitUser> = mutableListOf()
-                            it.forEach{email ->
-                                Firebase.auth.currentUser?.email?.let { em ->
-                                    if (email != em) {
-                                        list.add(ZegoUIKitUser(email, email))
-                                    }
-                                }
-                            }
-                            callButton.setInvitees(list)
-                        })
-                    }
-                )
-            }
-
+//            item {
+//                ChannelItem(
+//                    channelName = channelName,
+//                    modifier =  Modifier,
+//                    shouldShowCallButton = true,
+//                    onclick = { },
+//                    onCall = { callButton->
+//                        viewModel.getAllUserEmail(channelId) {
+//                        val list: MutableList<ZegoUIKitUser> = mutableListOf()
+//                        it.forEach { email ->
+//                            Firebase.auth.currentUser?.email?.let { em ->
+//                                if(email != em){
+//                                    list.add(
+//                                        ZegoUIKitUser(
+//                                            email, email
+//                                        )
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        callButton.setInvitees(list)
+//                    }
+//                })
+//            }
             items(messages.reversed()) { message ->
                 ChatBubble(message = message)
             }
