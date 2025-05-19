@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -247,7 +248,6 @@ fun ChatMessages(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = {
-                msg.value = ""
                 onImageClicked()
             }) {
                 Image(painter = painterResource(id = R.drawable.attach), contentDescription = "Send")
@@ -274,8 +274,10 @@ fun ChatMessages(
             )
 
             IconButton(onClick = {
-                onSendMessage(msg.value)
-                msg.value = ""
+                if (msg.value.isNotEmpty()) {
+                    onSendMessage(msg.value)
+                    msg.value = ""
+                }
             }) {
                 Image(painter = painterResource(id = R.drawable.send), contentDescription = "Send")
             }
@@ -291,49 +293,74 @@ fun ChatBubble(message: Message) {
     } else {
         DarkGrey
     }
+    
+    // Format timestamp
+    val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val timeString = dateFormat.format(Date(message.createdAt))
+    
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp)
-
     ) {
         val alignment = if (!isCurrentUser) Alignment.CenterStart else Alignment.CenterEnd
-        Row(
+        Column(
             modifier = Modifier
                 .padding(8.dp)
                 .align(alignment),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = if (!isCurrentUser) Alignment.Start else Alignment.End
         ) {
+            // Display sender name
             if (!isCurrentUser) {
-                Image(
-                    painter = painterResource(id = R.drawable.friend),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp)
+                Text(
+                    text = message.senderName ?: "Unknown",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
             }
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = bubbleColor, shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(16.dp)
+            
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (message.imageUrl != null) {
-                    AsyncImage(
-                        model = message.imageUrl,
+                if (!isCurrentUser) {
+                    Image(
+                        painter = painterResource(id = R.drawable.friend),
                         contentDescription = null,
-                        modifier = Modifier.size(200.dp),
-                        contentScale = ContentScale.Crop
+                        modifier = Modifier.size(40.dp)
                     )
-                } else {
-
-                    Text(text = message.message?.trim() ?: "", color = Color.White)
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Column(
+                    horizontalAlignment = if (!isCurrentUser) Alignment.Start else Alignment.End
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = bubbleColor, shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(16.dp)
+                    ) {
+                        if (message.imageUrl != null) {
+                            AsyncImage(
+                                model = message.imageUrl,
+                                contentDescription = null,
+                                modifier = Modifier.size(200.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Text(text = message.message?.trim() ?: "", color = Color.White)
+                        }
+                    }
+                    // Display timestamp
+                    Text(
+                        text = timeString,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp),
+                        fontSize = 12.sp
+                    )
                 }
             }
-
         }
-
     }
 }
 

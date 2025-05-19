@@ -54,7 +54,12 @@ class ChatViewModel @Inject constructor(
                         Log.w("sendMessage", "senderName is null!")
                     } else {
                         Log.d("sendMessage", "senderName: ${message.senderName}")
-                        postNotificationToUsers(channelID, message.senderName, messageText ?: "")
+                        // Only send notification for text messages
+                        if (messageText != null && messageText.isNotEmpty()) {
+                            postNotificationToUsers(channelID, message.senderName, messageText)
+                        } else if (image != null) {
+                            postNotificationToUsers(channelID, message.senderName, "sent an image")
+                        }
                     }
                 } else {
                     Log.e("sendMessage", "Failed to send message", task.exception)
