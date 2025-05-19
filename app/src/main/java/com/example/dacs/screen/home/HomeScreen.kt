@@ -167,64 +167,6 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
-//@Composable
-//fun ChannelItem(
-//    channelName: String,
-//    onclick: () -> Unit,
-//    modifier: Modifier,
-//    shouldShowCallButton: Boolean = false,
-//    onCall: (ZegoSendCallInvitationButton) -> Unit
-//) {
-//    Box(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .clip(RoundedCornerShape(16.dp))
-//            .background(DarkGrey)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(8.dp)
-//                .clickable { onclick() },
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .size(70.dp)
-//                        .clip(CircleShape)
-//                        .background(Color.Yellow.copy(alpha = 0.3f))
-//                ) {
-//                    Text(
-//                        text = channelName[0].uppercase(),
-//                        fontSize = 35.sp,
-//                        color = Color.White,
-//                        style = TextStyle(fontSize = 35.sp),
-//                        textAlign = TextAlign.Center,
-//                        modifier = Modifier.align(Alignment.Center)
-//                    )
-//                }
-//
-//                Text(
-//                    text = channelName,
-//                    modifier = Modifier.padding(start = 8.dp),
-//                    color = Color.White
-//                )
-//            }
-//
-//            if (shouldShowCallButton) {
-//                Row {
-//                    CallButton(isVideoCall = true, onCall)
-//                    CallButton(isVideoCall = false, onCall)
-//                }
-//            }
-//        }
-//    }
-//}
-
 @Composable
 fun ChannelItem(
     channelName: String,

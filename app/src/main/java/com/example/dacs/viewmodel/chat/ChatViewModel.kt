@@ -47,12 +47,17 @@ class ChatViewModel @Inject constructor(
             image
         )
         db.getReference("messages").child(channelID).push().setValue(message)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    message.senderName?.let { it1 ->
-                        postNotificationToUsers(channelID,
-                            it1, messageText ?: "")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("sendMessage", "Message sent successfully")
+                    if (message.senderName == null) {
+                        Log.w("sendMessage", "senderName is null!")
+                    } else {
+                        Log.d("sendMessage", "senderName: ${message.senderName}")
+                        postNotificationToUsers(channelID, message.senderName, messageText ?: "")
                     }
+                } else {
+                    Log.e("sendMessage", "Failed to send message", task.exception)
                 }
             }
     }
@@ -93,6 +98,7 @@ class ChatViewModel @Inject constructor(
         registerUserIdToChannel(channelID)
     }
 
+    // Lấy danh sách email của người dùng của 1 kênh chat
     fun getAllUserEmail(channelID: String, callBack: (List<String>) -> Unit) {
         val ref = db.reference.child("channels").child(channelID).child("users")
         val userIds = mutableListOf<String>()

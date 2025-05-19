@@ -131,14 +131,6 @@ fun ChatScreen(navController: NavController, channelId: String, channelName: Str
                     .background(Color.Black.copy(alpha = 0.8f))
                     .padding(16.dp)
             ) {
-//                ChannelItem(
-//                    channelName = channelName,
-//                    onclick = {},
-//                    modifier = Modifier.fillMaxWidth(),
-//                    true,
-//                    onCall = {}
-//                )
-
                 ChannelItem(
                     channelName = channelName,
                     modifier =  Modifier,
@@ -241,30 +233,6 @@ fun ChatMessages(
                 .padding(horizontal = 8.dp),
             reverseLayout = true
         ) {
-//            item {
-//                ChannelItem(
-//                    channelName = channelName,
-//                    modifier =  Modifier,
-//                    shouldShowCallButton = true,
-//                    onclick = { },
-//                    onCall = { callButton->
-//                        viewModel.getAllUserEmail(channelId) {
-//                        val list: MutableList<ZegoUIKitUser> = mutableListOf()
-//                        it.forEach { email ->
-//                            Firebase.auth.currentUser?.email?.let { em ->
-//                                if(email != em){
-//                                    list.add(
-//                                        ZegoUIKitUser(
-//                                            email, email
-//                                        )
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        callButton.setInvitees(list)
-//                    }
-//                })
-//            }
             items(messages.reversed()) { message ->
                 ChatBubble(message = message)
             }
