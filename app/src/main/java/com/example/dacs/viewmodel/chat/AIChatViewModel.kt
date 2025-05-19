@@ -2,6 +2,10 @@ package com.example.dacs.viewmodel.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dacs.api.client.ApiClient
+import com.example.dacs.api.model.ChatRequest
+import com.example.dacs.api.model.RequestMessage
+import com.example.dacs.model.AIChatMessage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.database
@@ -12,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import com.example.dacs.model.AIChatMessage
 
 @HiltViewModel
 class AIChatViewModel @Inject constructor() : ViewModel() {
@@ -69,13 +72,25 @@ class AIChatViewModel @Inject constructor() : ViewModel() {
                     .push()
                 messageRef.setValue(userMessage).await()
 
-                // Simulate AI response (replace with actual AI integration)
-                val aiResponse = AIChatMessage(
-                    content = "This is a simulated AI response. Replace this with actual AI integration.",
-                    isUser = false
+                // Call Novita AI API
+                val request = ChatRequest(
+                    messages = listOf(
+                        RequestMessage("system", "Act like you are a helpful assistant."),
+                        RequestMessage("user", content)
+                    )
+                )
+
+                val response = ApiClient.chatService.chat(
+                    apiKey = "Bearer ${ApiClient.API_KEY}",
+                    request = request
                 )
 
                 // Save AI response
+                val aiResponse = AIChatMessage(
+                    content = response.choices.firstOrNull()?.message?.content ?: "Sorry, I couldn't process that.",
+                    isUser = false
+                )
+
                 db.getReference("ai_chats")
                     .child(currentUserId)
                     .push()
