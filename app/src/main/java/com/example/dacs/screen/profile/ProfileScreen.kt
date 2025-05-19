@@ -6,7 +6,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,13 +16,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.dacs.viewmodel.profile.ProfileState
+import com.example.dacs.viewmodel.profile.ProfileViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
+    val viewModel: ProfileViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
+    val displayName by viewModel.displayName.collectAsState()
+    val email by viewModel.email.collectAsState()
+
+    LaunchedEffect(state) {
+        if (state is ProfileState.Success) {
+            // Reset state after successful update
+            viewModel.updateDisplayName(displayName)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,7 +70,7 @@ fun ProfileScreen(navController: NavController) {
                     .background(Color(0xFF334155))
             ) {
                 Text(
-                    text = Firebase.auth.currentUser?.email?.firstOrNull()?.uppercase() ?: "",
+                    text = (displayName.firstOrNull() ?: email.firstOrNull())?.uppercase() ?: "",
                     color = Color.White,
                     style = TextStyle(fontSize = 50.sp),
                     textAlign = TextAlign.Center,
@@ -65,22 +80,84 @@ fun ProfileScreen(navController: NavController) {
             
             Spacer(modifier = Modifier.size(24.dp))
             
-            Text(
-                text = Firebase.auth.currentUser?.email ?: "",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium
+            OutlinedTextField(
+                value = displayName,
+                onValueChange = { viewModel.updateDisplayName(it) },
+                label = { Text("Display Name", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color(0xFF334155),
+                    unfocusedIndicatorColor = Color(0xFF334155),
+                    focusedLabelColor = Color.Gray,
+                    unfocusedLabelColor = Color.Gray,
+                    cursorColor = Color.White
                 )
             )
             
-            Spacer(modifier = Modifier.size(48.dp))
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            OutlinedTextField(
+                value = email,
+                onValueChange = { },
+                label = { Text("Email", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = false,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Gray,
+                    unfocusedTextColor = Color.Gray,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color(0xFF334155),
+                    unfocusedIndicatorColor = Color(0xFF334155),
+                    focusedLabelColor = Color.Gray,
+                    unfocusedLabelColor = Color.Gray,
+                    disabledTextColor = Color.Gray,
+                    disabledContainerColor = Color.Transparent,
+                    disabledIndicatorColor = Color(0xFF334155),
+                    disabledLabelColor = Color.Gray
+                )
+            )
+            
+            Spacer(modifier = Modifier.size(32.dp))
+            
+            Button(
+                onClick = { viewModel.updateProfile() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF334155)
+                ),
+                enabled = state !is ProfileState.Loading
+            ) {
+                if (state is ProfileState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White
+                    )
+                } else {
+                    Text("Update Profile", style = TextStyle(fontSize = 16.sp))
+                }
+            }
+
+            if (state is ProfileState.Error) {
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = (state as ProfileState.Error).message,
+                    color = Color.Red,
+                    style = TextStyle(fontSize = 14.sp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.size(16.dp))
             
             Button(
                 onClick = {
                     Firebase.auth.signOut()
-                    navController.navigate("login") {
-                        popUpTo("home") { inclusive = true }
+                    navController.navigate("signin") {
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
