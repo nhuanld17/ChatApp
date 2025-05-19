@@ -70,7 +70,8 @@ fun HomeScreen(navController: NavController) {
         }
     }
     val viewModel = hiltViewModel<HomeViewModel>()
-    val channels = viewModel.channels.collectAsState()
+    val channels = viewModel.filteredChannels.collectAsState()
+    val searchQuery = viewModel.searchQuery.collectAsState()
     val addChannel = remember {
         mutableStateOf(false)
     }
@@ -97,8 +98,8 @@ fun HomeScreen(navController: NavController) {
     ) {
         Box(
             modifier = Modifier
-                .padding(it)
                 .fillMaxSize()
+                .padding(it)
         ) {
             LazyColumn {
                 item {
@@ -112,8 +113,8 @@ fun HomeScreen(navController: NavController) {
 
                 item {
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = searchQuery.value,
+                        onValueChange = { viewModel.updateSearchQuery(it) },
                         placeholder = { Text(text = "Search ....") },
                         modifier = Modifier
                             .fillMaxWidth()
