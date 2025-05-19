@@ -13,6 +13,7 @@ import com.example.dacs.screen.auth.signin.SignInScreen
 import com.example.dacs.screen.auth.signup.SignUpScreen
 import com.example.dacs.screen.chat.ChatScreen
 import com.example.dacs.screen.home.HomeScreen
+import com.example.dacs.screen.profile.ProfileScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -31,6 +32,9 @@ fun MainApp() {
             }
             composable("home") {
                 HomeScreen(navController)
+            }
+            composable("profile") {
+                ProfileScreen(navController)
             }
             composable("chat/{channelId}&{channelName}", arguments = listOf(
                 navArgument("channelId") {

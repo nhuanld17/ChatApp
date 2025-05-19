@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,6 +60,7 @@ import com.zegocloud.uikit.prebuilt.call.invite.widget.ZegoSendCallInvitationBut
 @Composable
 fun HomeScreen(navController: NavController) {
     val context = LocalContext.current as MainActivity
+    val showProfile = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         Firebase.auth.currentUser?.let {
             context.initZegoService(
@@ -103,11 +105,27 @@ fun HomeScreen(navController: NavController) {
         ) {
             LazyColumn {
                 item {
-                    Text(
-                        text = "Messages", color = Color.Gray,
-                        style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Black),
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Messages",
+                            color = Color.Gray,
+                            style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Black)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable { navController.navigate("profile") },
+                            tint = Color.Gray
+                        )
+                    }
                     Spacer(modifier = Modifier.size(16.dp))
                 }
 
@@ -166,6 +184,18 @@ fun HomeScreen(navController: NavController) {
             }
         }
     }
+
+    if (showProfile.value) {
+        ModalBottomSheet(
+            onDismissRequest = { showProfile.value = false },
+            sheetState = sheetState
+        ) {
+            ProfileDialog(
+                userEmail = Firebase.auth.currentUser?.email ?: "",
+                onDismiss = { showProfile.value = false }
+            )
+        }
+    }
 }
 
 @Composable
@@ -180,7 +210,7 @@ fun ChannelItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(DarkGrey)
+            .background(Color(0xFF1E293B))
             .clickable { onclick() }
     ) {
         Row(
@@ -193,7 +223,7 @@ fun ChannelItem(
                 modifier = Modifier
                     .size(70.dp)
                     .clip(CircleShape)
-                    .background(Color.Yellow.copy(alpha = 0.3f))
+                    .background(Color(0xFF334155))
             ) {
                 Text(
                     text = channelName[0].uppercase(),
@@ -236,6 +266,52 @@ fun AddChannelDialog(onAddChannel: (String) -> Unit) {
         Spacer(modifier = Modifier.padding(8.dp))
         Button(onClick = { onAddChannel(channelName.value) }, modifier = Modifier.fillMaxWidth()) {
             Text(text = "Add")
+        }
+    }
+}
+
+@Composable
+fun ProfileDialog(
+    userEmail: String,
+    onDismiss: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF334155))
+        ) {
+            Text(
+                text = userEmail.firstOrNull()?.uppercase() ?: "",
+                color = Color.White,
+                style = TextStyle(fontSize = 40.sp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Spacer(modifier = Modifier.size(16.dp))
+        Text(
+            text = userEmail,
+            style = TextStyle(
+                fontSize = 18.sp,
+                color = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.size(24.dp))
+        Button(
+            onClick = {
+                Firebase.auth.signOut()
+                onDismiss()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Sign Out")
         }
     }
 }
