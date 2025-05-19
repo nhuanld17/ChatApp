@@ -151,6 +151,57 @@ class ChatViewModel @Inject constructor(
     }
 
     fun postNotificationToUsers(channelID: String, senderName: String, messageContext: String) {
+        // Get channel name from Firebase
+        Log.d("ChatViewModel", "Getting channel name for ID: $channelID")
+        db.getReference("channel").child(channelID)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                Log.d("ChatViewModel", "Channel data: ${snapshot.value}")
+                val channelName = snapshot.getValue(String::class.java) ?: channelID
+                Log.d("ChatViewModel", "Retrieved channel name: $channelName")
+                
+                val fcmUrl = "https://fcm.googleapis.com/v1/projects/dacs-d1f95/messages:send"
+                val jsonBody = JSONObject().apply {
+                    put("message", JSONObject().apply {
+                        put("topic", "group_$channelID")
+                        put("notification", JSONObject().apply {
+                            put("title", "New message in $channelName")
+                            put("body", "$senderName: $messageContext")
+                        })
+                    })
+                }
+
+                val requestBody = jsonBody.toString()
+                Log.d("ChatViewModel", "Sending notification with title: New message in $channelName")
+
+                val request = object : StringRequest(Method.POST, fcmUrl, Response.Listener {
+                    Log.d("ChatViewModel", "Notification sent successfully")
+                }, Response.ErrorListener {
+                    Log.e("ChatViewModel", "Failed to send notification")
+                }) {
+                    override fun getBody(): ByteArray {
+                        return requestBody.toByteArray()
+                    }
+
+                    override fun getHeaders(): MutableMap<String, String> {
+                        val headers = HashMap<String, String>()
+                        headers["Authorization"] = "Bearer ${getAccessToken()}"
+                        headers["Content-Type"] = "application/json"
+                        return headers
+                    }
+                }
+
+                val queue = Volley.newRequestQueue(context)
+                queue.add(request)
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatViewModel", "Failed to get channel name", e)
+                // Fallback to using channel ID if failed to get channel name
+                sendNotificationWithChannelId(channelID, senderName, messageContext)
+            }
+    }
+
+    private fun sendNotificationWithChannelId(channelID: String, senderName: String, messageContext: String) {
         val fcmUrl = "https://fcm.googleapis.com/v1/projects/dacs-d1f95/messages:send"
         val jsonBody = JSONObject().apply {
             put("message", JSONObject().apply {
