@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,12 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.dacs.MainActivity
+import com.example.dacs.R
+import com.example.dacs.screen.chat.CallButton
 import com.example.dacs.service.AppID
 import com.example.dacs.service.AppSign
-import com.example.dacs.MainActivity
-import com.example.dacs.viewmodel.home.HomeViewModel
-import com.example.dacs.screen.chat.CallButton
 import com.example.dacs.ui.theme.DarkGrey
+import com.example.dacs.viewmodel.home.HomeViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.zegocloud.uikit.prebuilt.call.invite.widget.ZegoSendCallInvitationButton
@@ -117,14 +119,27 @@ fun HomeScreen(navController: NavController) {
                             color = Color.Gray,
                             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Black)
                         )
-                        Icon(
-                            imageVector = Icons.Filled.Person,
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clickable { navController.navigate("profile") },
-                            tint = Color.Gray
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clickable { navController.navigate("profile") },
+                                tint = Color.Gray
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.bot_chat),
+                                contentDescription = "AI Chat",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clickable { navController.navigate("ai_chat") },
+                                tint = Color.Gray
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.size(16.dp))
                 }

@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.dacs.screen.auth.signin.SignInScreen
 import com.example.dacs.screen.auth.signup.SignUpScreen
+import com.example.dacs.screen.chat.AIChatScreen
 import com.example.dacs.screen.chat.ChatScreen
 import com.example.dacs.screen.home.HomeScreen
 import com.example.dacs.screen.profile.ProfileScreen
@@ -47,6 +48,9 @@ fun MainApp() {
                 val channelId = it.arguments?.getString("channelId") ?: ""
                 val channelName = it.arguments?.getString("channelName") ?: ""
                 ChatScreen(navController, channelId, channelName)
+            }
+            composable("ai_chat") {
+                AIChatScreen(navController)
             }
         }
     }
