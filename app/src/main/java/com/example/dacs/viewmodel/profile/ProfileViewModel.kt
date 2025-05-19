@@ -49,4 +49,21 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+
+    fun updatePassword(newPassword: String) {
+        viewModelScope.launch {
+            try {
+                _state.value = ProfileState.Loading
+                if (newPassword.length < 6) {
+                    _state.value = ProfileState.Error("Password must be at least 6 characters")
+                    return@launch
+                }
+                val user = Firebase.auth.currentUser
+                user?.updatePassword(newPassword)?.await()
+                _state.value = ProfileState.Success
+            } catch (e: Exception) {
+                _state.value = ProfileState.Error(e.message ?: "Failed to update password")
+            }
+        }
+    }
 } 

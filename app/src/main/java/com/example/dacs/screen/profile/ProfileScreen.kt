@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -148,6 +149,81 @@ fun ProfileScreen(navController: NavController) {
                     text = (state as ProfileState.Error).message,
                     color = Color.Red,
                     style = TextStyle(fontSize = 14.sp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.size(16.dp))
+
+            var showPasswordDialog by remember { mutableStateOf(false) }
+            var newPassword by remember { mutableStateOf("") }
+            
+            Button(
+                onClick = { showPasswordDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF334155)
+                )
+            ) {
+                Text("Change Password", style = TextStyle(fontSize = 16.sp))
+            }
+
+            if (showPasswordDialog) {
+                AlertDialog(
+                    onDismissRequest = { showPasswordDialog = false },
+                    title = { Text("Change Password", color = Color.White) },
+                    text = {
+                        Column {
+                            OutlinedTextField(
+                                value = newPassword,
+                                onValueChange = { newPassword = it },
+                                label = { Text("New Password", color = Color.Gray) },
+                                modifier = Modifier.fillMaxWidth(),
+                                visualTransformation = PasswordVisualTransformation(),
+                                colors = TextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White,
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color(0xFF334155),
+                                    unfocusedIndicatorColor = Color(0xFF334155),
+                                    focusedLabelColor = Color.Gray,
+                                    unfocusedLabelColor = Color.Gray,
+                                    cursorColor = Color.White
+                                )
+                            )
+                            if (newPassword.isNotEmpty() && newPassword.length < 6) {
+                                Text(
+                                    text = "Password must be at least 6 characters",
+                                    color = Color.Red,
+                                    style = TextStyle(fontSize = 12.sp),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                viewModel.updatePassword(newPassword)
+                                showPasswordDialog = false
+                                newPassword = ""
+                            },
+                            enabled = newPassword.length >= 6
+                        ) {
+                            Text("Change", color = Color.White)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showPasswordDialog = false
+                                newPassword = ""
+                            }
+                        ) {
+                            Text("Cancel", color = Color.White)
+                        }
+                    },
+                    containerColor = Color(0xFF1E293B)
                 )
             }
             
